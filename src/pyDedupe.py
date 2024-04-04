@@ -8,6 +8,8 @@ pyDedupe.py
 A command line tool to identify deuplicate files based on 
 size and md5 hash value.
 """
+
+
 def main():
     if len(sys.argv) > 1:
         path = sys.argv[1]
@@ -23,6 +25,7 @@ def main():
 
     print("\nDone.")
 
+
 def scan_files(path):
     duplicate_list = []
     file_dict = {}
@@ -34,10 +37,10 @@ def scan_files(path):
             file_hash = get_md5_hash(file_path)
             key = f"{file_size}:{file_hash}"
             file_info = {
-                'name': file_path,
-                'size': file_size,
-                'md5_hash': file_hash,
-                'key': key,
+                "name": file_path,
+                "size": file_size,
+                "md5_hash": file_hash,
+                "key": key,
             }
 
             if key in file_dict:
@@ -48,12 +51,14 @@ def scan_files(path):
 
     return file_dict, duplicate_list
 
+
 def get_md5_hash(file_path):
     hash_md5 = hashlib.md5()
     with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
 
 if __name__ == "__main__":
     # stuff only to run when not called via 'import' here
