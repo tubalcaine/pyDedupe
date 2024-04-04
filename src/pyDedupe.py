@@ -16,7 +16,7 @@ def main():
     else:
         path = os.getcwd()
 
-    file_dict, duplicate_list = scan_files(path)
+    file_dict, duplicate_list = scan_files(path, detail=1000)
 
     for dupe in duplicate_list:
         print(f"Duplicate files found for {dupe}:")
@@ -26,28 +26,39 @@ def main():
     print("\nDone.")
 
 
-def scan_files(path):
+def scan_files(path, detail=0):
     duplicate_list = []
     file_dict = {}
+
+    count = 0
 
     for root, dirs, files in os.walk(path):
         for file in files:
             file_path = os.path.join(root, file)
-            file_size = os.path.getsize(file_path)
-            file_hash = get_md5_hash(file_path)
-            key = f"{file_size}:{file_hash}"
-            file_info = {
-                "name": file_path,
-                "size": file_size,
-                "md5_hash": file_hash,
-                "key": key,
-            }
+            count += 1
+            if detail > 0 and count % detail == 0:
+                sys.stderr.write(f"\rProcessed {count} files...")
 
-            if key in file_dict:
-                file_dict[key].append(file_info)
-                duplicate_list.append(key)
-            else:
-                file_dict[key] = [file_info]
+            try:
+                file_size = os.path.getsize(file_path)
+                file_hash = get_md5_hash(file_path)
+                key = f"{file_size}:{file_hash}"
+                file_info = {
+                    "name": file_path,
+                    "size": file_size,
+                    "md5_hash": file_hash,
+                    "key": key,
+                }
+
+                if key in file_dict:
+                    file_dict[key].append(file_info)
+                    duplicate_list.append(key)
+                else:
+                    file_dict[key] = [file_info]
+            except Exception as e:
+                sys.stderr.write(f"\r\nError processing file: {file_path}\n")
+                sys.stderr.write(f"Exception: {str(e)}\n")
+                continue
 
     return file_dict, duplicate_list
 
