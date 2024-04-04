@@ -27,7 +27,7 @@ def main():
 
 
 def scan_files(path, detail=0):
-    duplicate_list = []
+    duplicate_list = {}
     file_dict = {}
 
     count = 0
@@ -52,7 +52,7 @@ def scan_files(path, detail=0):
 
                 if key in file_dict:
                     file_dict[key].append(file_info)
-                    duplicate_list.append(key)
+                    duplicate_list[key] = key
                 else:
                     file_dict[key] = [file_info]
             except Exception as e:
