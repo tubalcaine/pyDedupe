@@ -16,7 +16,7 @@ def main():
     else:
         path = os.getcwd()
 
-    file_dict, duplicate_list = scan_files(path, detail=37)
+    file_dict, duplicate_list = scan_files(path, detail=7)
 
     for dupe in duplicate_list:
         print(f"Duplicate files found for {dupe}:")
