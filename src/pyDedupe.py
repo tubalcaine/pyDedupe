@@ -41,6 +41,15 @@ def scan_files(path, detail=0):
 
             try:
                 file_size = os.path.getsize(file_path)
+
+                # Skip empty files
+                if file_size == 0:
+                    continue
+
+                # Report large files
+                if file_size > 1024 * 1024 * 1024:
+                    sys.stderr.write(f"\r\nProcessing large file: {file_path}\n")
+
                 file_hash = get_md5_hash(file_path)
                 key = f"{file_size}:{file_hash}"
                 file_info = {
