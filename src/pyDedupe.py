@@ -33,61 +33,62 @@ def main():
 
     print("\nDone.\n")
 
-    def scan_files(path, detail=0):
-        duplicate_list = {}
-        file_dict = {}
 
-        count = 0
+def scan_files(path, detail=0):
+    duplicate_list = {}
+    file_dict = {}
 
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                count += 1
-                if detail > 0 and count % detail == 0:
-                    sys.stderr.write(f"\rProcessed {count} files...")
+    count = 0
 
-                try:
-                    file_size = os.path.getsize(file_path)
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            count += 1
+            if detail > 0 and count % detail == 0:
+                sys.stderr.write(f"\rProcessed {count} files...")
 
-                    # Skip empty files
-                    if file_size == 0:
-                        continue
+            try:
+                file_size = os.path.getsize(file_path)
 
-                    # Report large files
-                    if file_size > 1024 * 1024 * 1024:
-                        sys.stderr.write(
-                            f"\r\nProcessing large file: {file_path}, size: {file_size}\n"
-                        )
-                        start_time = time.time()
-
-                    file_hash = get_md5_hash(file_path)
-
-                    if file_size > 1024 * 1024 * 1024:
-                        end_time = time.time()
-                        run_time = end_time - start_time
-                        sys.stderr.write(
-                            f"Time taken to calculate MD5 hash for {file_path}: {run_time} seconds\n"
-                        )
-
-                    key = f"{file_size}:{file_hash}"
-                    file_info = {
-                        "name": file_path,
-                        "size": file_size,
-                        "md5_hash": file_hash,
-                        "key": key,
-                    }
-
-                    if key in file_dict:
-                        file_dict[key].append(file_info)
-                        duplicate_list[key] = key
-                    else:
-                        file_dict[key] = [file_info]
-                except Exception as e:
-                    sys.stderr.write(f"\r\nError processing file: {file_path}\n")
-                    sys.stderr.write(f"Exception: {str(e)}\n")
+                # Skip empty files
+                if file_size == 0:
                     continue
 
-        return file_dict, duplicate_list
+                # Report large files
+                if file_size > 1024 * 1024 * 1024:
+                    sys.stderr.write(
+                        f"\r\nProcessing large file: {file_path}, size: {file_size}\n"
+                    )
+                    start_time = time.time()
+
+                file_hash = get_md5_hash(file_path)
+
+                if file_size > 1024 * 1024 * 1024:
+                    end_time = time.time()
+                    run_time = end_time - start_time
+                    sys.stderr.write(
+                        f"Time taken to calculate MD5 hash for {file_path}: {run_time} seconds\n"
+                    )
+
+                key = f"{file_size}:{file_hash}"
+                file_info = {
+                    "name": file_path,
+                    "size": file_size,
+                    "md5_hash": file_hash,
+                    "key": key,
+                }
+
+                if key in file_dict:
+                    file_dict[key].append(file_info)
+                    duplicate_list[key] = key
+                else:
+                    file_dict[key] = [file_info]
+            except Exception as e:
+                sys.stderr.write(f"\r\nError processing file: {file_path}\n")
+                sys.stderr.write(f"Exception: {str(e)}\n")
+                continue
+
+    return file_dict, duplicate_list
 
 
 def get_md5_hash(file_path):
